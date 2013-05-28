@@ -3,35 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-namespace Picture_Saver
+
+namespace PictureSaver
 {
-    static class Program
+    public static class Program
     {
         static private DirectoryInfo pictureDirectory;
 
-        static Program()
+        private static void SetPictureDirectory(string subDir = null)
         {
             pictureDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
-        }
+            if (subDir != null)
+            {
+                string subDirPath = string.Format("{0}\\{1}", pictureDirectory.FullName, subDir);
+                if (!Directory.Exists(subDirPath))
+                {
+                    Directory.CreateDirectory(subDirPath);
+                }
 
-        private static bool IsDirectory(string path)
-        {
-            DirectoryInfo info = new DirectoryInfo(path);
-            return info.Exists;
-        }
-
-        private static bool IsFile(string path)
-        {
-            FileInfo info = new FileInfo(path);
-            return info.Exists;
+                pictureDirectory = new DirectoryInfo(subDirPath);
+            }
         }
 
         private static void ProcessPath(string path)
         {
-            if (IsDirectory(path))
+            if (Utils.IsDirectory(path))
+            {
                 ProcessDirectory(path);
-            else if (IsFile(path))
+            }
+            else if (Utils.IsFile(path))
+            {
                 ProcessFile(path);
+            }
         }
 
         private static void ProcessDirectory(string path)
@@ -69,7 +72,7 @@ namespace Picture_Saver
             FileInfo[] files = directoryInfo.GetFiles(string.Format("{0}{1}", Path.GetFileNameWithoutExtension(newFullPath), "*"));
             while (files.Length > 0)
             {
-                if (FileCompare(files[0].FullName, info.FullName))
+                if (Utils.FileCompare(files[0].FullName, info.FullName))
                 {
                     Console.WriteLine("File {0} already exists", info.Name);
                     return;
@@ -79,7 +82,7 @@ namespace Picture_Saver
                     Console.WriteLine("File name {0} already exists", info.Name);
                 }
 
-                string numbers = ExtractNumbers(Path.GetFileNameWithoutExtension(newFullPath));
+                string numbers = Utils.ExtractNumbers(Path.GetFileNameWithoutExtension(newFullPath));
                 string format = "{0:";
                 for (int i = 0; i < numbers.Length; ++i)
                 {
@@ -99,91 +102,39 @@ namespace Picture_Saver
             File.Copy(info.FullName, newFullPath);
         }
 
-        public static void Main(string[] args)
+        public static void ExecuteCommand(Command command)
         {
-            foreach (string path in args)
+            switch (command.Type)
             {
-                ProcessPath(path);
+                case CommandType.Path:
+                    ProcessPath(command.Value);
+                    break;
+                case CommandType.SubDir:
+                    SetPictureDirectory(command.Args[0]);
+                    break;
             }
         }
 
-        private static string ExtractNumbers(string expr)
+        public static void Main(string[] args)
         {
-            List<string> numWords = new List<string>();
-            string currWord = "";
-            numWords.Add(currWord);
-
-            int temp;
-
-            foreach (char character in expr)
+            SetPictureDirectory();
+            Command lastCommand = null;
+            foreach (string arg in args)
             {
-                if (char.IsDigit(character))
+                if (lastCommand == null || lastCommand.RemainingArgCount == 0)
                 {
-                    currWord += character;
+                    lastCommand = new Command(arg);
                 }
                 else
                 {
-                    if(int.TryParse(currWord, out temp))
-                        numWords.Add(currWord);
-                    currWord = "";
+                    lastCommand.AddArg(arg);
+                }
+
+                if (lastCommand.RemainingArgCount == 0)
+                {
+                    ExecuteCommand(lastCommand);
                 }
             }
-
-            if (int.TryParse(currWord, out temp))
-                numWords.Add(currWord);
-
-            return numWords.Last();
-        }
-
-        private static bool FileCompare(string file1, string file2)
-        {
-            int file1byte;
-            int file2byte;
-            FileStream fs1;
-            FileStream fs2;
-
-            // Determine if the same file was referenced two times.
-            if (file1 == file2)
-            {
-                // Return true to indicate that the files are the same.
-                return true;
-            }
-
-            // Open the two files.
-            fs1 = new FileStream(file1, FileMode.Open);
-            fs2 = new FileStream(file2, FileMode.Open);
-
-            // Check the file sizes. If they are not the same, the files 
-            // are not the same.
-            if (fs1.Length != fs2.Length)
-            {
-                // Close the file
-                fs1.Close();
-                fs2.Close();
-
-                // Return false to indicate files are different
-                return false;
-            }
-
-            // Read and compare a byte from each file until either a
-            // non-matching set of bytes is found or until the end of
-            // file1 is reached.
-            do
-            {
-                // Read one byte from each file.
-                file1byte = fs1.ReadByte();
-                file2byte = fs2.ReadByte();
-            }
-            while ((file1byte == file2byte) && (file1byte != -1));
-
-            // Close the files.
-            fs1.Close();
-            fs2.Close();
-
-            // Return the success of the comparison. "file1byte" is 
-            // equal to "file2byte" at this point only if the files are 
-            // the same.
-            return ((file1byte - file2byte) == 0);
         }
     }
 }
