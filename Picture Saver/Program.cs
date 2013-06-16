@@ -121,7 +121,9 @@ namespace PictureSaver
 
             if (args.Length == 0)
             {
-                Console.WriteLine("Usage: directory [options]");
+                Console.WriteLine("Usage: [options] directory");
+                Console.WriteLine("Options:");
+                Console.WriteLine("--sub-dir: Designates a sub directory within the user's My Pictures folder to sort pictures into.");
             }
 
             SetPictureDirectory();
