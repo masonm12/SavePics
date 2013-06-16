@@ -106,8 +106,9 @@ namespace PictureSaver
                     format += "}";
                     count++;
                     newFullPath = newFullPath.Replace(numbers, string.Format(format, count));
-                    files = directoryInfo.GetFiles(string.Format("{0}{1}", Path.GetFileNameWithoutExtension(newFullPath), "*"));
                 }
+
+                files = directoryInfo.GetFiles(string.Format("{0}{1}", Path.GetFileNameWithoutExtension(newFullPath), "*"));
             }
 
             if (renamed)
