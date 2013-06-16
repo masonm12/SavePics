@@ -20,6 +20,11 @@ namespace PictureSaver
             return info.Exists;
         }
 
+        /// <summary>
+        /// Extracts the last set of numbers from a string, returns them as a string.
+        /// </summary>
+        /// <param name="expr">String to extract from.</param>
+        /// <returns>Last string of numbers found, blank if no numbers found.</returns>
         public static string ExtractNumbers(string expr)
         {
             List<string> numWords = new List<string>();
@@ -48,6 +53,26 @@ namespace PictureSaver
             return numWords.Last();
         }
 
+        /// <summary>
+        /// Appends a number to the end of a file path, before the file extension.
+        /// For num = 1
+        /// C:/Path/To/File/File.file -> C:/Path/To/File/File1.file
+        /// </summary>
+        /// <param name="path">Path to append.</param>
+        /// <param name="num">Number to append to path.</param>
+        /// <returns>File path with number appended to filename.</returns>
+        public static string AppendNumberToFile(string path, int num)
+        {
+            string baseFilename = Path.GetFileNameWithoutExtension(path);
+            return path.Replace(baseFilename, string.Format("{0}{1}", baseFilename, num));
+        }
+
+        /// <summary>
+        /// Compares the byte contents of two files, returns true if they are the same, false otherwise.
+        /// </summary>
+        /// <param name="file1"></param>
+        /// <param name="file2"></param>
+        /// <returns></returns>
         public static bool FileCompare(string file1, string file2)
         {
             int file1byte;

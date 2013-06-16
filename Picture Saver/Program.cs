@@ -9,10 +9,12 @@ namespace PictureSaver
     public static class Program
     {
         static private DirectoryInfo pictureDirectory;
+        static private Stats pictureStats;
 
         private static void SetPictureDirectory(string subDir = null)
         {
             pictureDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
+            // check if we're sorting into a My Pictures sub-directory
             if (subDir != null)
             {
                 string subDirPath = string.Format("{0}\\{1}", pictureDirectory.FullName, subDir);
@@ -56,6 +58,7 @@ namespace PictureSaver
 
         private static void ProcessFile(FileInfo info)
         {
+            pictureStats.PicturesScanned++;
             DateTime time = info.LastWriteTime;
             string newPath = string.Format("{0}\\{1}\\{2:00}", pictureDirectory.FullName, time.Year, time.Month);
             string newFilename = info.Name;
@@ -69,36 +72,50 @@ namespace PictureSaver
 
             string newFullPath = string.Format("{0}\\{1}", newPath, newFilename);
 
+            bool renamed = false;
             FileInfo[] files = directoryInfo.GetFiles(string.Format("{0}{1}", Path.GetFileNameWithoutExtension(newFullPath), "*"));
             while (files.Length > 0)
             {
                 if (Utils.FileCompare(files[0].FullName, info.FullName))
                 {
-                    Console.WriteLine("File {0} already exists", info.Name);
+                    pictureStats.DuplicatesFound++;
+                    Console.WriteLine("File {0} already exists, skipping.", info.Name);
                     return;
                 }
                 else
                 {
-                    Console.WriteLine("File name {0} already exists", info.Name);
+                    Console.WriteLine("File name {0} already exists, renaming.", info.Name);
                 }
 
+                renamed = true;
                 string numbers = Utils.ExtractNumbers(Path.GetFileNameWithoutExtension(newFullPath));
-                string format = "{0:";
-                for (int i = 0; i < numbers.Length; ++i)
-                {
-                    format += "0";
-                }
-                format += "}";
                 int count;
                 if (!int.TryParse(numbers, out count))
                 {
-                    return;
+                    Console.WriteLine("Could not extract a number from the picture filename, adding number.");
+                    newFullPath = Utils.AppendNumberToFile(newFullPath, 1);
                 }
-                count++;
-                newFullPath = newFullPath.Replace(numbers, string.Format(format, count));
-                files = directoryInfo.GetFiles(string.Format("{0}{1}", Path.GetFileNameWithoutExtension(newFullPath), "*"));
+                else
+                {
+                    string format = "{0:";
+                    for (int i = 0; i < numbers.Length; ++i)
+                    {
+                        format += "0";
+                    }
+
+                    format += "}";
+                    count++;
+                    newFullPath = newFullPath.Replace(numbers, string.Format(format, count));
+                    files = directoryInfo.GetFiles(string.Format("{0}{1}", Path.GetFileNameWithoutExtension(newFullPath), "*"));
+                }
             }
 
+            if (renamed)
+            {
+                pictureStats.PicturesRenamed++;
+            }
+
+            pictureStats.PicturesSaved++;
             File.Copy(info.FullName, newFullPath);
         }
 
@@ -123,10 +140,11 @@ namespace PictureSaver
             {
                 Console.WriteLine("Usage: [options] directory");
                 Console.WriteLine("Options:");
-                Console.WriteLine("--sub-dir: Designates a sub directory within the user's My Pictures folder to sort pictures into.");
+                Console.WriteLine("--sub-dir [sub-dir name]: Designates a sub directory within the user's My Pictures folder to sort pictures into.");
             }
 
             SetPictureDirectory();
+            pictureStats = new Stats();
             Command lastCommand = null;
             foreach (string arg in args)
             {
@@ -144,6 +162,8 @@ namespace PictureSaver
                     ExecuteCommand(lastCommand);
                 }
             }
+
+            pictureStats.Print();
         }
     }
 }
