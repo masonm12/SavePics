@@ -117,6 +117,13 @@ namespace PictureSaver
 
         public static void Main(string[] args)
         {
+            Console.WriteLine("Picture Saver");
+
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Usage: directory [options]");
+            }
+
             SetPictureDirectory();
             Command lastCommand = null;
             foreach (string arg in args)
