@@ -8,7 +8,7 @@ namespace PictureSaver
     public enum CommandType
     {
         Path,
-        SubDir
+        Destination
     }
 
     public class Command
@@ -30,9 +30,10 @@ namespace PictureSaver
             args = new List<string>();
             switch (str)
             {
-                case "--sub-dir":
+                case "--destination":
+                case "-d":
                     argCount = 1;
-                    type = CommandType.SubDir;
+                    type = CommandType.Destination;
                     break;
                 default:
                     argCount = 0;

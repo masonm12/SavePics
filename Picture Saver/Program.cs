@@ -11,19 +11,15 @@ namespace PictureSaver
         static private DirectoryInfo pictureDirectory;
         static private Stats pictureStats;
 
-        private static void SetPictureDirectory(string subDir = null)
+        private static void SetPictureDirectory(string dir = null)
         {
-            pictureDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
-            // check if we're sorting into a My Pictures sub-directory
-            if (subDir != null)
+            if (dir == null)
             {
-                string subDirPath = string.Format("{0}\\{1}", pictureDirectory.FullName, subDir);
-                if (!Directory.Exists(subDirPath))
-                {
-                    Directory.CreateDirectory(subDirPath);
-                }
-
-                pictureDirectory = new DirectoryInfo(subDirPath);
+                pictureDirectory = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
+            }
+            else
+            {
+                pictureDirectory = new DirectoryInfo(dir);
             }
         }
 
@@ -127,7 +123,7 @@ namespace PictureSaver
                 case CommandType.Path:
                     ProcessPath(command.Value);
                     break;
-                case CommandType.SubDir:
+                case CommandType.Destination:
                     SetPictureDirectory(command.Args[0]);
                     break;
             }
@@ -141,7 +137,7 @@ namespace PictureSaver
             {
                 Console.WriteLine("Usage: [options] directory");
                 Console.WriteLine("Options:");
-                Console.WriteLine("--sub-dir [sub-dir name]: Designates a sub directory within the user's My Pictures folder to sort pictures into.");
+                Console.WriteLine("--destination, -d: Designates a folder to sort pictures into, defaults to My Pictures for current user.");
             }
 
             SetPictureDirectory();
