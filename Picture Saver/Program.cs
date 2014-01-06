@@ -10,6 +10,7 @@ namespace PictureSaver
     {
         static private DirectoryInfo pictureDirectory;
         static private Stats pictureStats;
+        static private List<string> ignoredExtensions = new List<string> { ".db" };
 
         private static void SetPictureDirectory(string dir = null)
         {
@@ -42,8 +43,10 @@ namespace PictureSaver
 
             foreach (FileInfo file in files)
             {
-                if(file.Exists)
+                if (file.Exists)
+                {
                     ProcessFile(file);
+                }
             }
         }
 
@@ -54,6 +57,11 @@ namespace PictureSaver
 
         private static void ProcessFile(FileInfo info)
         {
+            if (ignoredExtensions.Contains(info.Extension))
+            {
+                return;
+            }
+
             pictureStats.PicturesScanned++;
             DateTime time = info.LastWriteTime;
             string newPath = string.Format("{0}\\{1}\\{2:00}", pictureDirectory.FullName, time.Year, time.Month);
