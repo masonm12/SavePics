@@ -18,17 +18,17 @@ argParser = argparse.ArgumentParser(prog='savepics',
 )
 argParser.add_argument('--version', action='version', version='%(prog)s {}'.format(version))
 argParser.add_argument('-n', '--dry-run', action='store_true',
-	help='Prints out what would be written without actually writing.'
+	help='prints out what would be written without actually writing'
 )
 argParser.add_argument('-s', '--suffix', action='store', default='Pictures', const=None, nargs='?',
-	help='Suffix to insert after folder name, defaults to %(default)s, can be overriden to nothing.'
+	help='suffix to insert after folder name, defaults to %(default)s, can be overriden to nothing'
 )
 argParser.add_argument('-v', '--verbose', action='count')
 argParser.add_argument('input', action='store',
-	help='Directory to read and sort.'
+	help='directory to read and sort'
 )
 argParser.add_argument('output', action='store',
-	help='Directory to write sorted pictures to.'
+	help='directory to write sorted pictures to'
 )
 
 def getFileNumber(filename):
