@@ -14,14 +14,14 @@ ignored = {
 }
 fileNumberPattern = re.compile('([0-9]+)')
 argParser = argparse.ArgumentParser(prog='savepics',
-	description='Sorts picture files from an input directory into an output directory, using a folder structure with the pattern YYYY/YYYY.MM.'
+	description='Sorts picture files from an input directory into an output directory, using a folder structure with the pattern YYYY/YYYY.MM SUFFIX.'
 )
 argParser.add_argument('--version', action='version', version='%(prog)s {}'.format(version))
 argParser.add_argument('-n', '--dry-run', action='store_true',
 	help='Prints out what would be written without actually writing.'
 )
-argParser.add_argument('-s', '--suffix', action='store', default='Pictures',
-	help='Suffix to insert after folder name, defaults to %(default)s.'
+argParser.add_argument('-s', '--suffix', action='store', default='Pictures', const=None, nargs='?',
+	help='Suffix to insert after folder name, defaults to %(default)s, can be overriden to nothing.'
 )
 argParser.add_argument('-v', '--verbose', action='count')
 argParser.add_argument('input', action='store',
@@ -51,7 +51,10 @@ def walkFiles(inDir):
 			
 def getFileOutPath(filename, outDir, suffix):
 	year, month = getFileYearMonth(filename)
-	return os.path.join(outDir, str(year), '{}.{:02} {}'.format(year, month, suffix), os.path.basename(filename))
+	formatStr = '{}.{:02}'
+	if suffix:
+		formatStr += ' {}'
+	return os.path.join(outDir, str(year), formatStr.format(year, month, suffix), os.path.basename(filename))
 	
 def splitFilename(filename):
 	"""splits filename into dirname, basename, ext"""	
@@ -134,6 +137,9 @@ def main():
 		print('Copying {} to {}.'.format(input, output))
 		if args.dry_run:
 			continue
+		dirname = os.path.dirname(output)
+		if not os.path.exists(dirname):
+			os.makedirs(os.path.dirname(output))
 		shutil.copy2(input, output)
 		
 	print('{} pictures scanned.'.format(fileCount))
