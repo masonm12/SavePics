@@ -129,16 +129,16 @@ def main():
 		useFilename(outpath)
 		copies.append((filename, outpath))
 		
-	print('{} pictures scanned.'.format(fileCount))
-	print('{} pictures copied.'.format(len(copies)))
-	print('{} duplicates.'.format(len(duplicates)))
-	print('{} renames.'.format(len(renames)))
-		
 	for input, output in copies:
+		print('Copying {} to {}.'.format(input, output))
 		if args.dry_run:
-			print('Would copy {} to {}.'.format(input, output))
 			continue
 		shutil.copy2(input, output)
+		
+	print('{} pictures scanned.'.format(fileCount))
+	print('{} pictures copied.'.format(len(copies)))
+	print('{} duplicates found.'.format(len(duplicates)))
+	print('{} renames.'.format(len(renames)))
 
 if __name__ == '__main__':
 	main()
