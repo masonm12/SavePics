@@ -16,13 +16,14 @@ fileNumberPattern = re.compile('([0-9]+)')
 argParser = argparse.ArgumentParser(prog='savepics',
 	description='Sorts picture files from an input directory into an output directory, using a folder structure with the pattern YYYY/YYYY.MM.'
 )
-argParser.add_argument('-v', '--version', action='version', version='%(prog)s {}'.format(version))
+argParser.add_argument('--version', action='version', version='%(prog)s {}'.format(version))
 argParser.add_argument('-n', '--dry-run', action='store_true',
 	help='Prints out what would be written without actually writing.'
 )
 argParser.add_argument('-s', '--suffix', action='store', default='Pictures',
 	help='Suffix to insert after folder name, defaults to %(default)s.'
 )
+argParser.add_argument('-v', '--verbose', action='count')
 argParser.add_argument('input', action='store',
 	help='Directory to read and sort.'
 )
@@ -138,7 +139,13 @@ def main():
 	print('{} pictures scanned.'.format(fileCount))
 	print('{} pictures copied.'.format(len(copies)))
 	print('{} duplicates found.'.format(len(duplicates)))
+	if args.verbose:
+		for duplicate in sorted(duplicates):
+			print('\t{}'.format(duplicate))
 	print('{} renames.'.format(len(renames)))
+	if args.verbose:
+		for rename in sorted(renames):
+			print('\t{}'.format(rename))
 
 if __name__ == '__main__':
 	main()
