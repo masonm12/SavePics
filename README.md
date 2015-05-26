@@ -4,7 +4,7 @@ Sorts picture files from an input directory into an output directory, using a fo
 
 ## Installation
 
-Install with [Scoop](http://scoop.sh) from my personal [Scoop Bucket](https://github.com/masonm12/ScoopBucket):
+Install with [Scoop](http://scoop.sh) from my personal [Scoop Bucket](https://github.com/masonm12/scoop-personal):
 
 	scoop install savepics
 	
