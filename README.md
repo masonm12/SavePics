@@ -10,7 +10,7 @@ Install with [Scoop](http://scoop.sh) from my personal [Scoop Bucket](https://gi
 	
 Or directly:
 
-	scoop install https://raw.githubusercontent.com/masonm12/ScoopBucket/master/savepics.json
+	scoop install https://raw.githubusercontent.com/masonm12/scoop-personal/master/savepics.json
 
 ## Usage
 	
@@ -28,4 +28,4 @@ Or directly:
 	  -s [SUFFIX], --suffix [SUFFIX]
 	                        suffix to insert after folder name, defaults to
 	                        Pictures, can be overriden to nothing
-	  -v, --verbose
+	  -v, --verbose         enable extra output
