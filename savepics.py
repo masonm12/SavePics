@@ -23,7 +23,9 @@ argParser.add_argument('-n', '--dry-run', action='store_true',
 argParser.add_argument('-s', '--suffix', action='store', default='Pictures', const=None, nargs='?',
 	help='suffix to insert after folder name, defaults to %(default)s, can be overriden to nothing'
 )
-argParser.add_argument('-v', '--verbose', action='count')
+argParser.add_argument('-v', '--verbose', action='count',
+	help='enable extra output'
+)
 argParser.add_argument('input', action='store',
 	help='directory to read and sort'
 )
