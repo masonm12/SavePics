@@ -1,3 +1,3 @@
 @echo off
 
-py %~dp0savepics.py %*
+py "%~dp0savepics.py" %*
