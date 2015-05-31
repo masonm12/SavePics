@@ -14,7 +14,11 @@ Or directly:
 
 ## Usage
 	
-	savepics [-h] [--version] [-n] [-s [SUFFIX]] [-v] input output
+	savepics [-h] [--version] [-n] [-s [SUFFIX]] [-v] [-m MONTH] [-y YEAR]
+	                input output
+	
+	Sorts picture files from an input directory into an output directory, using a
+	folder structure with the pattern YYYY/YYYY.MM SUFFIX.
 	
 	positional arguments:
 	  input                 directory to read and sort
@@ -29,3 +33,8 @@ Or directly:
 	                        suffix to insert after folder name, defaults to
 	                        Pictures, can be overriden to nothing
 	  -v, --verbose         enable extra output
+	  -m MONTH, --month MONTH
+	                        override the detected month of files for sorting
+	                        purposes
+	  -y YEAR, --year YEAR  override the detected year of files for sorting
+	                        purposes
