@@ -26,6 +26,12 @@ argParser.add_argument('-s', '--suffix', action='store', default='Pictures', con
 argParser.add_argument('-v', '--verbose', action='count',
 	help='enable extra output'
 )
+argParser.add_argument('-m', '--month', action='store', type=int, choices=range(1, 13), metavar='MONTH',
+	help='override the detected month of files for sorting purposes'
+)
+argParser.add_argument('-y', '--year', action='store', type=int,
+	help='override the detected year of files for sorting purposes'
+)
 argParser.add_argument('input', action='store',
 	help='directory to read and sort'
 )
@@ -38,10 +44,10 @@ def getFileNumber(filename):
 	result = fileNumberPattern.search(filename)  
 	return result.group(0) if result else '0'
 	
-def getFileYearMonth(filename):
+def getFileYearMonth(filename, args):
 	"""gets the year and month a picture was modified (taken)"""
 	mtime = time.localtime(os.path.getmtime(filename))
-	return mtime.tm_year, mtime.tm_mon
+	return args.year or mtime.tm_year, args.month or mtime.tm_mon
 
 def walkFiles(inDir):
 	"""will iterate over non-ignored files"""
@@ -51,12 +57,12 @@ def walkFiles(inDir):
 				continue
 			yield os.path.join(path, filename)
 			
-def getFileOutPath(filename, outDir, suffix):
-	year, month = getFileYearMonth(filename)
+def getFileOutPath(filename, outDir, args):
+	year, month = getFileYearMonth(filename, args)
 	formatStr = '{}.{:02}'
-	if suffix:
+	if args.suffix:
 		formatStr += ' {}'
-	return os.path.join(outDir, str(year), formatStr.format(year, month, suffix), os.path.basename(filename))
+	return os.path.join(outDir, str(year), formatStr.format(year, month, args.suffix), os.path.basename(filename))
 	
 def splitFilename(filename):
 	"""splits filename into dirname, basename, ext"""	
@@ -115,7 +121,7 @@ def main():
 	renames = set()
 	for filename in walkFiles(inDir):
 		fileCount += 1
-		outpath = getFileOutPath(filename, outDir, args.suffix)
+		outpath = getFileOutPath(filename, outDir, args)
 		# see if this name is already in use
 		while isFilenameUsed(outpath):
 			# see if this file has already been copied
